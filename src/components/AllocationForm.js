@@ -5,34 +5,48 @@ import { AppContext } from '../context/AppContext';
 const AllocationForm = (props) => {
     // needs the dispatcher to manage the state in a centralised manner
     // needs to know the current remainign amount
-    const { dispatch, remaining } = useContext(AppContext);
+    const { dispatch, remaining, currency } = useContext(AppContext);
 
     const [name, setName] = useState('');
     const [cost, setCost] = useState('');
     const [action, setAction] = useState('');
 
     const submitEvent = () => {
+        try {
+            // convert the cost
+            let numericalCost = parseInt(cost, 10)
 
-        if (cost > remaining) {
-            alert("The value cannot exceed remaining funds  £" + remaining);
-            setCost("");
-            return;
+            // account for invalida inputs:
+            if (isNaN(numericalCost)) {
+                throw new Error("The value allocated cannot be non-numeric inputs! ")
+            }
+
+            if (numericalCost > remaining) {
+                alert("The value cannot exceed remaining funds  £" + remaining);
+                setCost("");
+                return;
+            }
+
+            const expense = {
+                name: name,
+                cost: numericalCost,
+            };
+            if (action === "Reduce") {
+                dispatch({
+                    type: 'RED_EXPENSE',
+                    payload: expense,
+                });
+            } else {
+                dispatch({
+                    type: 'ADD_EXPENSE',
+                    payload: expense,
+                });
+            }
         }
-
-        const expense = {
-            name: name,
-            cost: parseInt(cost),
-        };
-        if (action === "Reduce") {
-            dispatch({
-                type: 'RED_EXPENSE',
-                payload: expense,
-            });
-        } else {
-            dispatch({
-                type: 'ADD_EXPENSE',
-                payload: expense,
-            });
+        // account for non-numerical situations
+        catch (error) {
+            alert(error.message)
+            setCost("");
         }
     };
 
@@ -40,7 +54,7 @@ const AllocationForm = (props) => {
         <div>
             <div className='row'>
 
-                <div className="input-group mb-3" style={{ marginLeft: '2rem' }}>
+                <div className="input-group" style={{ marginLeft: '2rem' }}>
                     <div className="input-group-prepend">
                         <label className="input-group-text" htmlFor="inputGroupSelect01">Department</label>
                     </div>
@@ -62,14 +76,17 @@ const AllocationForm = (props) => {
                         <option value="Reduce" name="Reduce">Reduce</option>
                     </select>
 
-                    <input
-                        required='required'
-                        type='number'
-                        id='cost'
-                        value={cost}
-                        style={{ marginLeft: '2rem', size: 10 }}
-                        onChange={(event) => setCost(event.target.value)}>
-                    </input>
+                    <div>
+                        <span style={{marginLeft: '2rem'}}>{currency[0]}</span>
+                        <input
+                            required='required'
+                            type='text'
+                            id='cost'
+                            value={cost}
+                            style={{size: 10 }}
+                            onChange={(event) => setCost(event.target.value)}>
+                        </input>
+                    </div>
 
                     <button className="btn btn-primary" onClick={submitEvent} style={{ marginLeft: '2rem' }}>
                         Save

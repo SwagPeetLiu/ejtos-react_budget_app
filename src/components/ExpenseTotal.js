@@ -2,7 +2,7 @@ import { useContext } from "react"
 import { AppContext } from "../context/AppContext"
 
 const ExpenseTotal = () =>{
-    const {expenses} = useContext(AppContext)
+    const {expenses, currency} = useContext(AppContext)
     // method reduce is used to iterate over each item to accumlate the cost, initialised
     // with an value of 0
     const totalExpenses = expenses.reduce((total, item) => {
@@ -11,7 +11,7 @@ const ExpenseTotal = () =>{
 
     return(
         <div className="alert alert-primary">
-            <span>Spent so far: £{totalExpenses}</span>
+            <span>Spent so far: {currency[0]}{totalExpenses}</span>
         </div>
     )
 }
