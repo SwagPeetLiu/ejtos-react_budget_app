@@ -1,1 +1,2 @@
-# coding-project-template
+# React front-ending coding experiences, dedicated to improve self-development skills on centralising state management and reducer customisations
+- APP context includes the essential info to keep track of the buget, expenses by department and remianing to display an accurate budget allocation report
